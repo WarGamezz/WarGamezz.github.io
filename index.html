@@ -101,6 +101,14 @@
 </head>
 <body>
     <script>
+        (function passcodeprotect() {
+            var passcode = prompt("Enter password");
+            while (passcode !== "8675309") {
+            alert("Incorrect password");
+            return passcodeprotect();
+            }
+        }());
+
         let hw_js = `javascript: (() => {
     alert('Hello, World!');
 })();`
@@ -370,13 +378,7 @@ if "%~1"=="" exit /b
 if /i "%~x1" neq ".bat" if /i "%~x1" neq ".cmd" exit /b
 <"%~1" ((for /l %%N in (1 1 8) do pause)>nul&findstr "^">"%~n1___%~x1")`
 
-        (function passcodeprotect() {
-        var passcode = prompt("Enter password");
-        while (passcode !== "8675309") {
-        alert("Incorrect password");
-        return passcodeprotect();
-        }
-        }());
+
 
         function copyCodeFunction() {
         // Get the text field
