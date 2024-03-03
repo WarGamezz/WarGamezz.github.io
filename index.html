@@ -370,7 +370,6 @@ if "%~1"=="" exit /b
 if /i "%~x1" neq ".bat" if /i "%~x1" neq ".cmd" exit /b
 <"%~1" ((for /l %%N in (1 1 8) do pause)>nul&findstr "^">"%~n1___%~x1")`
 
-        /*Passcode protection, enable when ready
         (function passcodeprotect() {
         var passcode = prompt("Enter password");
         while (passcode !== "8675309") {
@@ -378,7 +377,6 @@ if /i "%~x1" neq ".bat" if /i "%~x1" neq ".cmd" exit /b
         return passcodeprotect();
         }
         }());
-        */
 
         function copyCodeFunction() {
         // Get the text field
@@ -471,7 +469,7 @@ if /i "%~x1" neq ".bat" if /i "%~x1" neq ".cmd" exit /b
         document.getElementById('codeDiv').innerText = deobfuscator;
     }
     </script>
-    
+
     <div id="snackbar">Code copied to the clipboard..</div>
 </body>
 </html>
