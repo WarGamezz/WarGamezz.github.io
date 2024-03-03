@@ -50,6 +50,52 @@
             padding-left: 30px;
             padding-top: 30px;
         }
+
+        #snackbar {
+        visibility: hidden; /* Hidden by default. Visible on click */
+        min-width: 250px; /* Set a default minimum width */
+        margin-left: -125px; /* Divide value of min-width by 2 */
+        background-color: #282c34; /* Black background color */
+        color: #fff; /* White text color */
+        text-align: center; /* Centered text */
+        border-radius: 8px;
+        border: none;
+        padding: 16px; /* Padding */
+        position: fixed; /* Sit on top of the screen */
+        z-index: 1; /* Add a z-index if needed */
+        left: 50%; /* Center the snackbar */
+        bottom: 30px; /* 30px from the bottom */
+        }
+
+        /* Show the snackbar when clicking on a button (class added with JavaScript) */
+        #snackbar.show {
+        visibility: visible; /* Show the snackbar */
+        /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+        However, delay the fade out process for 2.5 seconds */
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        /* Animations to fade the snackbar in and out */
+        @-webkit-keyframes fadein {
+        from {bottom: 0; opacity: 0;}
+        to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+        from {bottom: 0; opacity: 0;}
+        to {bottom: 30px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+        from {bottom: 30px; opacity: 1;}
+        to {bottom: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+        from {bottom: 30px; opacity: 1;}
+        to {bottom: 0; opacity: 0;}
+        }
     </style>
 
 </head>
@@ -306,6 +352,24 @@ if %md5% == 95a02a484451efe83dd894bdacff0eae (
     )
 )`
 
+let obfuscator = `@echo off
+if "%~1"=="" exit /b
+if /i "%~x1" neq ".bat" if /i "%~x1" neq ".cmd" exit /b
+for /f %%i in ("certutil.exe") do if not exist "%%~$path:i" (
+  echo CertUtil.exe not found.
+  pause
+  exit /b
+)
+>"temp.~b64" echo(//4mY2xzDQo=
+certutil.exe -f -decode "temp.~b64" "%~n1___%~x1"
+del "temp.~b64"
+copy "%~n1___%~x1" /b + "%~1" /b`
+
+let deobfuscator = `@echo off &setlocal
+if "%~1"=="" exit /b
+if /i "%~x1" neq ".bat" if /i "%~x1" neq ".cmd" exit /b
+<"%~1" ((for /l %%N in (1 1 8) do pause)>nul&findstr "^">"%~n1___%~x1")`
+
         /*Passcode protection, enable when ready
         (function passcodeprotect() {
         var passcode = prompt("Enter password");
@@ -329,6 +393,17 @@ if %md5% == 95a02a484451efe83dd894bdacff0eae (
 
         // Alert the copied text
         alert("Copied the text: " + copyText.value);
+        }
+
+        function snackbarFunction() {
+        // Get the snackbar DIV
+        var x = document.getElementById("snackbar");
+
+        // Add the "show" class to DIV
+        x.className = "show";
+
+        // After 3 seconds, remove the show class from DIV
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
         }
 
     </script>
@@ -356,9 +431,13 @@ if %md5% == 95a02a484451efe83dd894bdacff0eae (
             &#128029;</a><br>Obfuscator
         </button>
 
+        <button class="button" id="deobfuscator">
+            &#127849;</a><br>De-obfuscator
+        </button>
+
         <br><br>
 
-        <button class="button button_code" id="copy_code" onclick="navigator.clipboard.writeText(document.getElementById('codeDiv').innerText)">
+        <button class="button button_code" id="copy_code" onclick="navigator.clipboard.writeText(document.getElementById('codeDiv').innerText);snackbarFunction()">
             &#10069; Copy the code &#10069;
         </button>
 
@@ -384,6 +463,15 @@ if %md5% == 95a02a484451efe83dd894bdacff0eae (
         document.getElementById('codeDiv').innerText = minified_js;
     }
 
+    document.getElementById('obfuscator').onclick = function() {
+        document.getElementById('codeDiv').innerText = obfuscator;
+    }
+
+    document.getElementById('deobfuscator').onclick = function() {
+        document.getElementById('codeDiv').innerText = deobfuscator;
+    }
     </script>
+    
+    <div id="snackbar">Code copied to the clipboard..</div>
 </body>
 </html>
