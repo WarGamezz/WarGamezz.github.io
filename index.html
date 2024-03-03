@@ -1,1 +1,389 @@
-<script>document.write(atob("PGJvZHkgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6IGJsYWNrO2NvbG9yOiB3aGl0ZTtmb250LWZhbWlseTogVmVyZGFuYTsiPgo8c2NyaXB0PgooZnVuY3Rpb24gcGFzc2NvZGVwcm90ZWN0KCkgewp2YXIgcGFzc2NvZGUgPSBwcm9tcHQoIkVudGVyIHBhc3N3b3JkIik7CndoaWxlIChwYXNzY29kZSAhPT0gIjg2NzUzMDkiKSB7CmFsZXJ0KCJJbmNvcnJlY3QgcGFzc3dvcmQiKTsKcmV0dXJuIHBhc3Njb2RlcHJvdGVjdCgpOwp9Cn0oKSk7Cjwvc2NyaXB0Pgo8Y2VudGVyPgo8cD4KPGJ1dHRvbiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjpvcmFuZ2U7Zm9udC1zaXplOiA1MHB4O3BhZGRpbmc6IDVweCAzMHB4O2JvcmRlci1yYWRpdXM6IDhweDtib3JkZXI6IG5vbmU7Ij4KPGEgaHJlZj0iamF2YXNjcmlwdDooKCk9PnthbGVydCgnSGVsbG8sIFdvcmxkIScpO30pKCk7IiBzdHlsZT0idGV4dC1kZWNvcmF0aW9uOiBub25lO2NvbG9yOiBibGFjayI+CiYjOTcyODs8YnI+SlMgVGVzdA=="));</script>
+<!-- remember to replace \ marks in batch with \\; to escape it with JS and in consequence HTML version -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polaco (*-*)</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Arial';
+        }
+
+        a {
+            text-decoration: none;
+        }
+    
+        .button {
+            font-size: 30px;
+            padding: 5px 30px;
+            border-radius: 8px;
+            border: none;
+            margin: 10px;
+            font-family: 'Arial';
+            font-size: large;
+            background-color:white;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        } 
+
+        .button_code {
+            background-color: #04AA6D; 
+            color: black; 
+        }
+
+        .button_code:hover {
+        background-color: red;
+        color: white;
+        }
+
+        .codeDiv {
+            width: 60%;
+            height: 600px;
+            text-align: left;
+            background-color: #282c34;
+            overflow-y: auto;
+            overflow-x: hidden;
+            color:#abb2bf; 
+            padding-left: 30px;
+            padding-top: 30px;
+        }
+    </style>
+
+</head>
+<body>
+    <script>
+        let hw_js = `javascript: (() => {
+    alert('Hello, World!');
+})();`
+
+        let full_js = `javascript: (() => {
+
+//create blank scriptNoteDiv which will be used to display messages to the user
+let scriptNoteDiv = document.createElement('div');
+scriptNoteDiv.id = 'extensionDiv';
+scriptNoteDiv.style.padding = '10px'
+
+//this is the note to the user regarding the usage of the script. Different courses require different usage. Sometimes the course (Cyber Awareness, EWIS, PME Courses) exposes API (LMS/API_1484_11). Sometimes it does not, so you have to launch the script from within the course itself.
+let note = '<br><br>This is a Sharable Content Object Reference Model (SCORM 2004 4th Edition or 2013 4th Edition) lesson, which can be abused by either forcing CMI values to the API (LMS/API_1484_11), force answering the test question or forcing test score.<br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>Cyber Awareness Challange<li>EWIS Fiber Optic/Wiring Awareness<li>Professional Military Education (IEPME/EPME/PPME) Courses <br></ul></u><ol><li>Click the "Click here to launch the lesson". This will open the course in a new window.</li><li>Go back to this page (title/menu page).</li><li>Click the bookmark button again to force CMI values into the API and complete the course.</li></ol><br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>PMK-EE<br></ul></u><ol><li>Click the "Click here to launch the lesson" <font color="red"> while holding CTRL key.</center></font> This will open the course in a new tab instead of separate window and therefore grant you an access to the bookmark bar.</li><li>Proceed to the test. <li>Click the bookmark button again to solve the test.<br><br>NOTE: JS code needs to be executed from within the course itself, not a title page. Otherwise you will receive <font color="red">Score:0.</font></li></ol><br>';
+
+//this is the note to remind user to actually open the course. To force SCORM cmi values, course needs to be initiated, otherwise API will either not be exposed or will close due to the no-progress value.
+let openCourseNote ='<br><br><center><font color="red">!! IMPORTANT: THE COURSE HAS TO BE OPENED IN A NEW TAB/WINDOW PRIOR TO THE SCRIPT EXECUTION !!<br></center></font>';
+
+//this is the note notifying user that the CMI values has been forced and the course can be closed.
+let cmi_forced_note ='<br><br><center><font color="red">!! CMI VALUES FORCED SUCCESSFULLY. CLOSE COURSE WINDOW TO COMPLETE.  !!</center></font>';
+
+//check if we're on the course's main page or within the course itself  
+switch(document.location.href.split('/')[3]) {
+            
+    //case for the course's main page
+    case 'ScormEngineInterface':
+            //grab the div where the course display it's messages
+            let mainWebDiv = document.getElementById('ScormContent').contentDocument.getElementById('frmPopupLauncher');
+
+            //append our blank div to the course message div (if there's only 4 pre-existing children. If the number of children is 5 or more, that means the the div that it's already there). Also attach a note to it.
+            if(mainWebDiv.childElementCount < 5){
+                mainWebDiv.appendChild(scriptNoteDiv);
+                mainWebDiv.childNodes[11].innerHTML = note;
+            };
+
+            //check if the course has been launched. if the main note still reads "Click here to launch the lesson" and it's visibility is still set to 'visible' that means that course hasn't been launched. Once it's clicked, visibility is set to 'hidden'.
+            if(mainWebDiv.childNodes[3].style.visibility=='visible'){
+                mainWebDiv.childNodes[11].innerHTML = note + openCourseNote;
+            } else {                    
+                //force CMI values                    
+                API_1484_11.SetValue('cmi.success_status', 'passed');
+                API_1484_11.SetValue('cmi.completion_status', 'completed'); 
+                mainWebDiv.childNodes[11].innerHTML = note + cmi_forced_note;
+            }; 
+        //break out of the case statement 
+        break;
+
+    //case for the internal course page    
+    case 'CourseWare':
+        $("#playImage").click();    
+            
+        //find element with the ID "Button_19". This is the "I AGGREE" button and click it. By default it does not have the onClick() event attached to it. Insteaad of creating the entire event from scratch, it's easier to attach the function to the onClick event of this element and click it. The 500ms interval is required here, otherwise the button is not available.
+        setInterval(function () {$('#Button_19').click(function(){cp.jumpToNextSlide();});$('#Button_19').click();}, 500);
+
+        //find element with the ID "Button_20". This is the "Next" button and click it. By default it does not have the onClick() event attached to it. Instead of creating the entire event from scratch, it's easier to attach the function to the onClick event of this element and click it. The 500ms interval is required here, otherwise the button is not available.
+        setInterval(function () {$('#Button_20').click(function(){cp.jumpToNextSlide();});$('#Button_20').click();}, 500);
+
+        //set Score and Passed attributes within SCROM API
+        setInterval(function () {SetScore(100,100,100);SetPassed(100);}, 500);
+        
+        //close tab
+        setInterval(function () {var myWindow = window.open("", "_self");myWindow.close();}, 2000);
+
+        /*THIS IS AN ALTERNATIVE SOLUTION WHICH FIGURES OUT THE PROPER ANSWER TO THE QUESTION AND ANSWERS IT. !KEEP AS AN ALTERNATIVE!
+        
+        // grab number_of_questions value so we can properly set-up the interval later
+        let number_of_questions = cp.model.data.quizzingData.numQuestionsInQuiz;
+        // set counter for interval purposes (so we can terminate the interval once you reach the end of the test)
+        let i=1;
+
+        // the only way to set it reliably and ensure that buttons are clicked as they become available is the interval
+        const myInterval = setInterval(function () {
+
+            // grab slide number
+            let slide_number = $('.cp-frameset')[0].id;
+
+            // grab possible answers to the question presented slide_number+q.qt = question itself. slide_number+q.ao = possible answers
+            let slide_possible_answers = cp.model.data[slide_number+'q'].ao;
+            // clean up the slide_possible_answers array, find the right answer
+            // for each item in the slide_possible_answers 
+            for (possible_answer in slide_possible_answers) {
+                // remove the last 2 characters (:0 :1 :2 :3) from the object items
+                slide_possible_answers[possible_answer] = slide_possible_answers[possible_answer].split(':')[0];
+                // if ic (is correct) for that answer equals true
+                if(cp.model.data[slide_possible_answers[possible_answer]].ic){
+                    // find the dns (for whatever reason radio inputs DO NOT match the question div) and add _radioInputField to it
+                    let correct_answer_radio=cp.model.data[slide_possible_answers[possible_answer]].dns+'_radioInputField';
+                    // find and click the correct_answer_radio in the document
+                    $('#' + correct_answer_radio).click();
+                }
+            }
+
+            //jump to the next slide
+            cp.jumpToNextSlide()
+
+            //increase the interval loop counter
+            i++;
+
+            //check if we reached the end of the test
+            if(i>number_of_questions){
+                // clear the interval if we did
+                clearInterval(myInterval);
+            }    
+        }, 1500);
+
+        //find and click submit all button at the end
+        setInterval(function () {$('#cpRTMBFirstBtn').click();}, 1500); 
+        */
+
+        //break out of the case statement
+        break;
+        
+}
+})();`
+
+        let minified_js = `javascript:(()=>{let e=document.createElement("div");e.id="extensionDiv",e.style.padding="10px";let t='<br><br>This is a Sharable Content Object Reference Model (SCORM 2004 4th Edition or 2013 4th Edition) lesson, which can be abused by either forcing CMI values to the API (LMS/API_1484_11), force answering the test question or forcing test score.<br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>Cyber Awareness Challange<li>EWIS Fiber Optic/Wiring Awareness<li>Professional Military Education (IEPME/EPME/PPME) Courses <br></ul></u><ol><li>Click the "Click here to launch the lesson". This will open the course in a new window.</li><li>Go back to this page (title/menu page).</li><li>Click the bookmark button again to force CMI values into the API and complete the course.</li></ol><br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>PMK-EE<br></ul></u><ol><li>Click the "Click here to launch the lesson" <font color="red"> while holding CTRL key.</center></font> This will open the course in a new tab instead of separate window and therefore grant you an access to the bookmark bar.</li><li>Proceed to the test. <li>Click the bookmark button again to solve the test.<br><br>NOTE: JS code needs to be executed from within the course itself, not a title page. Otherwise you will receive <font color="red">Score:0.</font></li></ol><br>',o='<br><br><center><font color="red">!! IMPORTANT: THE COURSE HAS TO BE OPENED IN A NEW TAB/WINDOW PRIOR TO THE SCRIPT EXECUTION !!<br></center></font>',i='<br><br><center><font color="red">!! CMI VALUES FORCED SUCCESSFULLY. CLOSE COURSE WINDOW TO COMPLETE.  !!</center></font>';switch(document.location.href.split("/")[3]){case"ScormEngineInterface":let n=document.getElementById("ScormContent").contentDocument.getElementById("frmPopupLauncher");n.childElementCount<5&&(n.appendChild(e),n.childNodes[11].innerHTML=t),"visible"==n.childNodes[3].style.visibility?n.childNodes[11].innerHTML=t+o:(API_1484_11.SetValue("cmi.success_status","passed"),API_1484_11.SetValue("cmi.completion_status","completed"),n.childNodes[11].innerHTML=t+i);break;case"CourseWare":$("#playImage").click(),setInterval(function(){$("#Button_19").click(function(){cp.jumpToNextSlide()}),$("#Button_19").click()},500),setInterval(function(){$("#Button_20").click(function(){cp.jumpToNextSlide()}),$("#Button_20").click()},500),setInterval(function(){SetScore(100,100,100),SetPassed(100)},500),setInterval(function(){window.open("","_self").close()},2e3)}})();`
+
+        let batch = `@echo off
+setlocal enableDelayedExpansion
+title Polaco VFA-106 v0.20 (3/2/2024) (*-*)
+set /a password_try=1
+set initial=0
+set NL=^
+
+
+set ASCII= !NL!!NL! [91m             :::::::::        ::::::::        :::             :::         ::::::::        ::::::::!NL!            :+:    :+:      :+:    :+:       :+:           :+: :+:      :+:    :+:      :+:    :+:!NL!           +:+    +:+      +:+    +:+       +:+          +:+   +:+     +:+             +:+    +:+ !NL!          +#++:++#+       +#+    +:+       +#+         +#++:++#++:    +#+             +#+    +:+  !NL!         +#+             +#+    +#+       +#+         +#+     +#+    +#+             +#+    +#+  !NL!        #+#             #+#    #+#       #+#         #+#     #+#    #+#    #+#      #+#    #+#  !NL!       ###              ########        ##########  ###     ###     ########        ########  [0m!NL!!NL!                                                                          VFA-106 v0.20 (3/2/2024)!NL!!NL!
+
+if not x%USERNAME:marcin=%==x%USERNAME% if not x%USERNAME:rudek=%==x%USERNAME% (goto:mainmenu) ELSE (goto:password_loop)
+
+:mainmenu
+cls & echo !ASCII! & set choice=
+echo    [96m === MENU =================================================!NL! 
+for /f "tokens=1,2,* delims=_ " %%A in ('"findstr /b /c:":menu_" "%~f0""') do echo.  [93m (%%B)	%%C
+echo.&set /p choice= [96m   Make a choice then press ENTER: [0m  [91m
+echo.&call:menu_%choice%
+goto:mainmenu
+
+:menu_1    Delete all bookmarks from the Edge Browser
+tskill msedge >nul 2>&1 & del /s "%UserProfile%\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks*" > nul 2>&1 & start "" "msedge.exe"
+if %initial%==0 goto:mainmenu
+
+:menu_2    Add Bookmarks to the Edge Browser
+echo {"roots":{"bookmark_bar":{"children":[{"id":"2","name":"🔑","type":"url","url":"javascript:(()=>{let e=document.createElement("div");e.id="extensionDiv",e.style.padding="10px";let t='<br><br>This is a Sharable Content Object Reference Model (SCORM 2004 4th Edition or 2013 4th Edition) lesson, which can be abused by either forcing CMI values to the API (LMS/API_1484_11), force answering the test question or forcing test score.<br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>Cyber Awareness Challange<li>EWIS Fiber Optic/Wiring Awareness<li>Professional Military Education (IEPME/EPME/PPME) Courses <br></ul></u><ol><li>Click the "Click here to launch the lesson". This will open the course in a new window.</li><li>Go back to this page (title/menu page).</li><li>Click the bookmark button again to force CMI values into the API and complete the course.</li></ol><br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>PMK-EE<br></ul></u><ol><li>Click the "Click here to launch the lesson" <font color="red"> while holding CTRL key.</center></font> This will open the course in a new tab instead of separate window and therefore grant you an access to the bookmark bar.</li><li>Proceed to the test. <li>Click the bookmark button again to solve the test.<br><br>NOTE: JS code needs to be executed from within the course itself, not a title page. Otherwise you will receive <font color="red">Score:0.</font></li></ol><br>',o='<br><br><center><font color="red">!! IMPORTANT: THE COURSE HAS TO BE OPENED IN A NEW TAB/WINDOW PRIOR TO THE SCRIPT EXECUTION !!<br></center></font>',i='<br><br><center><font color="red">!! CMI VALUES FORCED SUCCESSFULLY. CLOSE COURSE WINDOW TO COMPLETE.  !!</center></font>';switch(document.location.href.split("/")[3]){case"ScormEngineInterface":let n=document.getElementById("ScormContent").contentDocument.getElementById("frmPopupLauncher");n.childElementCount<5&&(n.appendChild(e),n.childNodes[11].innerHTML=t),"visible"==n.childNodes[3].style.visibility?n.childNodes[11].innerHTML=t+o:(API_1484_11.SetValue("cmi.success_status","passed"),API_1484_11.SetValue("cmi.completion_status","completed"),n.childNodes[11].innerHTML=t+i);break;case"CourseWare":$("#playImage").click(),setInterval(function(){$("#Button_19").click(function(){cp.jumpToNextSlide()}),$("#Button_19").click()},500),setInterval(function(){$("#Button_20").click(function(){cp.jumpToNextSlide()}),$("#Button_20").click()},500),setInterval(function(){SetScore(100,100,100),SetPassed(100)},500),setInterval(function(){window.open("","_self").close()},2e3)}})();"},{"id":"3","name":"ASM Online","type":"url","url":"https://asm3.nmci.navy.mil/ASM3/main"},{"id":"4","name":"BOL","type":"url","url":"https://www.bol.navy.mil/bam/"},{"id":"5","name":"CSFWL","type":"url","url":"https://flankspeed.sharepoint-mil.us/sites/USFF-CNAL-CMDS/CSFWL"},{"id":"6","name":"CSFWP","type":"url","url":"https://flankspeed.sharepoint-mil.us/sites/CPF-CNAP-CMDS/CSFWP"},{"id":"7","name":"DTS","type":"url","url":"https://dtsproweb.defensetravel.osd.mil/dts-app/pubsite/all/view/?utm_source=mnp0public"},{"id":"8","name":"E-LEARNING","type":"url","url":"https://learning.nel.navy.mil/ELIAASv2p/"},{"id":"9","name":"FLTMPS","show_icon":false,"type":"url","url":"https://ntmpsweb.dc3n.navy.mil/Fltmps/DoDBanner.aspx"},{"id":"10","name":"JDRS","type":"url","url":"https://jdrs.mil/"},{"id":"11","name":"MY PAY","type":"url","url":"https://mypay.dfas.mil/#/"},{"id":"12","name":"MNA","type":"url","url":"https://mynavyassignment.dc3n.navy.mil "},{"id":"13","name":"NSIPS","type":"url","url":"https://www.nsips.cloud.navy.mil/my.policy"},{"id":"14","name":"NATEC","type":"url","url":"https://mynatec.navair.navy.mil/natechome.htm"},{"id":"15","name":"PHA ONLINE","type":"url","url":"https://eha.health.mil/EHA/ServiceMemberAssessmentManagementConsole.aspx"},{"id":"16","name":"PRIMS","type":"url","url":"https://www.mnp.navy.mil/group/performance/prims?utm_source=mnp0public"},{"id":"17","name":"PROFILE SHEET","type":"url","url":"https://neas.ncdc.navy.mil/public/ProfileSheet"},{"id":"18","name":"TSP","type":"url","url":"https://www.tsp.gov/"},{"id":"19","name":"WEBMAIL","type":"url","url":"https://webmail.apps.mil/mail/"},{"id":"20","name":"QUICK LINKS","type":"url","url":"https://my.navy.mil/quick-links.html"}],"id":"1","name":"Favorites bar","type":"folder"},"other":{"children":[],"id":"21","name":"Other favorites","type":"folder"},"synced":{"children":[],"id":"22","name":"Mobile favorites","type":"folder"}},"version":1} > "%UserProfile%\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks"
+tskill msedge >nul 2>&1 & start "" "msedge.exe"
+if %initial%==0 goto:mainmenu
+
+:menu_3    Remove all currently mapped network printers
+wmic printer where "Local='FALSE'" delete >nul 2>&1
+if %initial%==0 goto:mainmenu
+
+:menu_4    Add VFA-106 Maint Support Printer and set as default printer
+rundll32 printui.dll,PrintUIEntry /in /n \\\\NAEAOCENPS51V.nadsusea.nads.navy.mil\\OCEN-BL122-FL1-RM166-XALC8045 >nul 2>&1 && rundll32 printui.dll,PrintUIEntry /y /n  \\\\NAEAOCENPS51V.nadsusea.nads.navy.mil\\OCEN-BL122-FL1-RM166-XALC8045 >nul 2>&1
+if %initial%==0 goto:mainmenu
+
+:menu_5    Disable Microsoft Teams
+tskill teams >nul 2>&1 & echo {"appPreferenceSettings":{"disableGpu":false,"openAtLogin":false,"openAsHidden":false,"runningOnClose":true,"registerAsIMProvider":false}} > "%APPDATA%\\Microsoft\\Teams\\desktop-config.json"
+if %initial%==0 goto:mainmenu
+
+:menu_6  Change power config settings and prevent time-out
+powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+for %%x in (monitor-timeout-ac monitor-timeout-dc disk-timeout-ac disk-timeout-dc standby-timeout-ac standby-timeout-dc hibernate-timeout-ac hibernate-timeout-dc) do (
+   powercfg /change %%~x 0
+)
+powercfg -setacvalueindex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 0d7dbae2-4294-402a-ba8e-26777e8488cd 309dce9b-bef4-4119-9921-a851fb12f0f4 1
+if %initial%==0 goto:mainmenu
+
+:menu_7    Change DPI scalling to 125%
+start "" ms-settings:display
+echo Set x=WScript.CreateObject("WScript.Shell") > a.vbs
+echo x.AppActivate "Settings" >> a.vbs
+echo x.SendKeys "{TAB}{TAB}{TAB}{TAB}{TAB}{TAB}{TAB}{TAB}{~}{UP}{UP}{UP}{UP}{UP}{UP}{UP}{DOWN}" >> a.vbs
+cscript a.vbs  >nul 2>&1
+taskkill/FI "WindowTitle eq Settings*" >nul 2>&1 
+del /s a.vbs  >nul 2>&1
+if %initial%==0 goto:mainmenu
+
+:menu_8    Add Airframes and Share Drive Shortcuts on the desktop
+call :shortcuts "SHARE DRIVE", "\\\\naeanrfkfs101v\\usff37$\\OCEN_VFA106_N09679\\N5 - Maintenance", 101, "AIRFRAMES", "\\\\naeanrfkfs101v\\usff37$\\OCEN_VFA106_N09679\\N5 - Maintenance\\AIRCRAFT DIVISION\\AIRFRAMES", 93
+exit /B %ERRORLEVEL%
+
+:shortcuts
+echo Set y = CreateObject("Wscript.shell").CreateShortcut("%USERPROFILE%\\Desktop\\%~1.lnk") > a.vbs
+echo y.TargetPath = "%~2" >> a.vbs
+echo y.IconLocation = "%SystemRoot%\\system32\\imageres.dll,%~3" >> a.vbs
+echo y.Hotkey = "Ctrl+Shift+Q" >> a.vbs
+echo y.Save >> a.vbs
+cscript a.vbs >nul 2>&1
+
+echo Set y = CreateObject("Wscript.shell").CreateShortcut("%USERPROFILE%\\Desktop\\%~4.lnk") > a.vbs
+echo y.TargetPath = "%~5" >> a.vbs
+echo y.IconLocation = "%SystemRoot%\\system32\\imageres.dll,%~6" >> a.vbs
+echo y.Hotkey = "Ctrl+Shift+S" >> a.vbs
+echo y.Save >> a.vbs
+cscript a.vbs >nul 2>&1
+
+del /f /q a.vbs >nul 2>&1
+if %initial%==0 goto:mainmenu
+
+:menu_9    Correct VFA-106 ShareDrive location
+net use /d S: >nul 2>&1 & net use S: "\\\\naeanrfkfs101v\\usff37$\\OCEN_VFA106_N09679\\N5 - Maintenance" /PERSISTENT:YES >nul 2>&1
+if %initial%==0 goto:mainmenu
+
+:menu_10    Fix taskbar (remove Search, Cortana, Task View and News & Interests, Touch Keyboard, Lock Taskbar)
+reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds /v ShellFeedsTaskbarViewMode /t REG_DWORD /d 2 /f >nul 2>&1
+reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced /v ShowCortanaButton /t REG_DWORD /d 0 /f >nul 2>&1
+reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Search /v SearchboxTaskbarMode /t REG_DWORD /d 0 /f >nul 2>&1
+reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced /v ShowTaskViewButton /t REG_DWORD /d 0 /f >nul 2>&1
+reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced /v TaskbarSizeMove /t REG_DWORD /d 0 /f >nul 2>&1
+reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People /v PeopleBand /t REG_DWORD /d 0 /f >nul 2>&1
+reg add HKCU\\Software\\Policies\\Microsoft\\Windows\\Explorer /v DisableNotificationCenter /t REG_DWORD /d 1 /f >nul 2>&1
+taskkill /F /IM explorer.exe >nul 2>&1 & start explorer >nul 2>&1
+if %initial%==0 goto:mainmenu
+
+
+:menu_11    Remove all certificates except the one containing my name
+for %%i in (%APPDATA%\\Microsoft\\SystemCertificates\\My\\Certificates\\*) do (
+>nul findstr /c:"RUDEK.MARCIN.DANIEL" %%i || (PowerShell -Command "gci cert:\\CurrentUser\\My\\%%~nxi | foreach { Remove-Item $_.PSPath }"))
+
+set initial=0
+goto:mainmenu
+
+:menu_i    Full initial setup
+set initial=1
+goto:menu_1
+exit
+
+:menu_q    Quit
+exit
+
+:password_loop
+cls & echo !ASCII!
+set /p password=   [101;93mType in your password:  [0m 
+echo %password% > %temp%\\password_pre_hash && echo %~n0 >> %temp%\\password_pre_hash
+
+for /f "skip=1 delims=" %%a in ('CertUtil -hashfile %temp%\\password_pre_hash MD5 ^| findstr /i /v "CertUtil"') do set md5=%%a & del %temp%\\password_pre_hash
+
+if %md5% == 95a02a484451efe83dd894bdacff0eae ( 
+    goto:mainmenu
+) else ( 
+    echo. 
+    set /a password_try+=1
+    if %password_try% neq 3 (
+      echo PASSWORDS DON'T MATCH! PRESS ENTER TO TRY AGAIN.
+      pause > nul
+      goto password_loop
+    ) else (
+      echo TOO MANY INCORRECT ATTEMPTS. PROGRAM WILL SELF DELETE NOW.
+      (goto) 2>nul & del "%~f0"
+      pause > nul
+    )
+)`
+
+        /*Passcode protection, enable when ready
+        (function passcodeprotect() {
+        var passcode = prompt("Enter password");
+        while (passcode !== "8675309") {
+        alert("Incorrect password");
+        return passcodeprotect();
+        }
+        }());
+        */
+
+        function copyCodeFunction() {
+        // Get the text field
+        var copyText = document.getElementById("codeDiv");
+
+        // Select the text field
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(copyText.value);
+
+        // Alert the copied text
+        alert("Copied the text: " + copyText.value);
+        }
+
+    </script>
+        
+    <center>
+        <button class="button" id="hw_js">
+            <a href="javascript:(()=>{alert('Hello, World!');})();">
+            &#9889;</a><br>JS Test
+        </button>
+    
+        <button class="button" id="full_js">
+            <a href="javascript:(()=>{let e=document.createElement(&#34;div&#34;);e.id=&#34;extensionDiv&#34;,e.style.padding=&#34;10px&#34;;let t='<br><br>This is a Sharable Content Object Reference Model (SCORM 2004 4th Edition or 2013 4th Edition) lesson, which can be abused by either forcing CMI values to the API (LMS/API_1484_11), force answering the test question or forcing test score.<br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>Cyber Awareness Challange<li>EWIS Fiber Optic/Wiring Awareness<li>Professional Military Education (IEPME/EPME/PPME) Courses <br></ul></u><ol><li>Click the &#34;Click here to launch the lesson&#34;. This will open the course in a new window.</li><li>Go back to this page (title/menu page).</li><li>Click the bookmark button again to force CMI values into the API and complete the course.</li></ol><br><br><b>USAGE FOR THE FOLLOWING COURSES: </b><br><ul><li><u>PMK-EE<br></ul></u><ol><li>Click the &#34;Click here to launch the lesson&#34; <font color=&#34;red&#34;> while holding CTRL key.</center></font> This will open the course in a new tab instead of separate window and therefore grant you an access to the bookmark bar.</li><li>Proceed to the test. <li>Click the bookmark button again to solve the test.<br><br>NOTE: JS code needs to be executed from within the course itself, not a title page. Otherwise you will receive <font color=&#34;red&#34;>Score:0.</font></li></ol><br>',o='<br><br><center><font color=&#34;red&#34;>!! IMPORTANT: THE COURSE HAS TO BE OPENED IN A NEW TAB/WINDOW PRIOR TO THE SCRIPT EXECUTION !!<br></center></font>',i='<br><br><center><font color=&#34;red&#34;>!! CMI VALUES FORCED SUCCESSFULLY. CLOSE COURSE WINDOW TO COMPLETE.  !!</center></font>';switch(document.location.href.split(&#34;/&#34;)[3]){case&#34;ScormEngineInterface&#34;:let n=document.getElementById(&#34;ScormContent&#34;).contentDocument.getElementById(&#34;frmPopupLauncher&#34;);n.childElementCount<5&&(n.appendChild(e),n.childNodes[11].innerHTML=t),&#34;visible&#34;==n.childNodes[3].style.visibility?n.childNodes[11].innerHTML=t+o:(API_1484_11.SetValue(&#34;cmi.success_status&#34;,&#34;passed&#34;),API_1484_11.SetValue(&#34;cmi.completion_status&#34;,&#34;completed&#34;),n.childNodes[11].innerHTML=t+i);break;case&#34;CourseWare&#34;:$(&#34;#playImage&#34;).click(),setInterval(function(){$(&#34;#Button_19&#34;).click(function(){cp.jumpToNextSlide()}),$(&#34;#Button_19&#34;).click()},500),setInterval(function(){$(&#34;#Button_20&#34;).click(function(){cp.jumpToNextSlide()}),$(&#34;#Button_20&#34;).click()},500),setInterval(function(){SetScore(100,100,100),SetPassed(100)},500),setInterval(function(){window.open(&#34;&#34;,&#34;_self&#34;).close()},2e3)}})();" style="text-decoration: none;color: black">
+            &#128192;</a><br>JS v0.20
+        </button>
+
+        <button class="button" id="batch">
+            &#128210;</a><br>Batch
+        </button>
+
+        <button class="button" id="minified_js">
+            &#128273;</a><br>Minified JS
+        </button>
+
+        <button class="button" id="obfuscator">
+            &#128029;</a><br>Obfuscator
+        </button>
+
+        <br><br>
+
+        <button class="button button_code" id="copy_code" onclick="navigator.clipboard.writeText(document.getElementById('codeDiv').innerText)">
+            &#10069; Copy the code &#10069;
+        </button>
+
+            <br><br>
+                
+        <pre><div id="codeDiv" class="codeDiv"><center>Show me the code</center></div></pre>
+    </center>
+    
+    <script>
+    document.getElementById('hw_js').onclick = function() {
+        document.getElementById('codeDiv').innerText = hw_js;
+    }
+
+    document.getElementById('full_js').onclick = function() {
+        document.getElementById('codeDiv').innerText = full_js;
+    }
+
+    document.getElementById('batch').onclick = function() {
+        document.getElementById('codeDiv').innerText = batch;
+    }
+
+    document.getElementById('minified_js').onclick = function() {
+        document.getElementById('codeDiv').innerText = minified_js;
+    }
+
+    </script>
+</body>
+</html>
